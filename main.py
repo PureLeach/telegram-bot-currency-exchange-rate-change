@@ -1,23 +1,28 @@
 from aiogram import Bot, Dispatcher, executor, types
-from environs import Env
 
-env = Env()
-env.read_env(override=True)
-
-API_TOKEN = env.str('API_TOKEN')
+import client
+from settings import API_TOKEN
 
 bot = Bot(token=API_TOKEN)
-
-
 dp = Dispatcher(bot)
 
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
     await message.reply(
-        'Привет! Этот бот предназначен для отслеживания курса валют и уведомления, когда курс достигнет заданного вами значения.\
-\n\nЧтобы получить подсказку, как пользоваться ботом, воспользуйся командой /help'
+        'Hi! This bot is designed to track the exchange rate and notify you when the rate reaches the value you set.\n\n'
+        'To get tips on how to use the bot, use the command /help'
     )
+
+
+@dp.message_handler(commands=['current'])
+async def send_current_exchange_rate(message: types.Message):
+    # NOTE Добавить настройку пользователя какие валюты выводить
+    # NOTE Добавить эмодзи
+    data = await client.get_current_exchange_rate()
+    usd = data['Valute']['USD']['Value']
+    eur = data['Valute']['EUR']['Value']
+    await message.reply('Current exchange rates:\n\n' f'USD: {usd}\n' f'EUR: {eur}')
 
 
 @dp.message_handler()
@@ -26,4 +31,4 @@ async def echo(message: types.Message):
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    executor.start_polling(dp, skip_updates=True)
