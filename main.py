@@ -15,11 +15,27 @@ async def send_welcome(message: types.Message):
     )
 
 
+@dp.message_handler(commands=['help'])
+async def get_help(message: types.Message):
+    await message.reply(
+        'Список доступных команд:\n\n'
+        '/current - показать текущий курс валют\n'
+        '/subscribe - подписаться на курс валют\n'
+        '/unsubscribe - отписаться от курса валют\n'
+        '/list_notification - вывести список уведомлений\n'
+        '/add_notification - добавить уведомление\n'
+        '/remove_notification - удалить уведомление\n'
+        '/remove_all_notification - удалить все уведомление\n'
+        '/help - справка'
+    )
+
+
 @dp.message_handler(commands=['current'])
 async def send_current_exchange_rate(message: types.Message):
-    # NOTE Добавить настройку пользователя какие валюты выводить
+    # NOTE Добавить настройку пользователя какие валюты выводить (нужна БД для сохранения настроек пользователей)
     # NOTE Добавить эмодзи
     data = await client.get_current_exchange_rate()
+    # NOTE добавить pydantic
     usd = data['Valute']['USD']['Value']
     eur = data['Valute']['EUR']['Value']
     await message.reply('Current exchange rates:\n\n' f'USD: {usd}\n' f'EUR: {eur}')
