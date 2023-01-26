@@ -3,7 +3,7 @@ import typing as t
 
 import aiohttp
 
-from settings import CBR_URL
+from settings import CBR_URL, logger
 
 
 async def get_current_exchange_rate() -> t.Dict[str, t.Any]:
@@ -15,5 +15,5 @@ async def get_current_exchange_rate() -> t.Dict[str, t.Any]:
                 data: dict = json.loads(raw_data)
                 return data
             else:
-                # NOTE LOG
+                logger.error(f'Ошибка при обращении к сервису {CBR_URL}: status_code={resp.status}, data={resp.text}')
                 raise Exception('')

@@ -1,4 +1,5 @@
 from environs import Env
+from loguru import logger
 
 env = Env()
 env.read_env(override=True)
@@ -13,3 +14,16 @@ DB_PASSWORD = env.str('DB_PASSWORD')
 DB_HOST = env.str('DB_HOST')
 DB_PORT = env.int('DB_PORT')
 DATABASE_URL = f'postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+
+
+logger.add(
+    'bot/logs/backend.log',
+    format='{time:DD/MM/YYYY HH:mm:ss} | {name}:{function}:{line} | {level} | {message}',
+    level='DEBUG',
+    rotation='10 MB',
+    serialize=True,
+    compression='zip',
+    backtrace=True,
+    diagnose=True,
+    encoding='utf-8',
+)

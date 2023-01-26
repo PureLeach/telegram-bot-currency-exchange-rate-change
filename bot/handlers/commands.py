@@ -1,23 +1,16 @@
 from aiogram import Dispatcher, types
 
-from models.user import User
+from controllers.user import UserController
 from services import api_client
 
 
 async def send_welcome(message: types.Message):
-    # NOTE Добавить логи
-    # NOTE Вынести создание пользователя в отдельный метод
-    db_session = message.bot.get('db')
-    async with db_session() as session:
-        await session.merge(
-            User(
-                id=message.from_user.id,
-                first_name=message.from_user.first_name,
-                last_name=message.from_user.last_name,
-                username=message.from_user.username,
-            )
-        )
-        await session.commit()
+    await UserController.create(
+        id=message.from_user.id,
+        first_name=message.from_user.first_name,
+        last_name=message.from_user.last_name,
+        username=message.from_user.username,
+    )
     await message.reply(
         'Hi! This bot is designed to track the exchange rate and notify you when the rate reaches the value you set.\n\n'
         'To get tips on how to use the bot, use the command /help'
