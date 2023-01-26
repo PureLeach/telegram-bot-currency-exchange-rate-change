@@ -1,7 +1,7 @@
 from aiogram import Dispatcher, types
 
 from controllers.user import UserController
-from services import api_client
+from services.api_client import ExchangeRateClient
 
 
 async def send_welcome(message: types.Message):
@@ -33,12 +33,8 @@ async def get_help(message: types.Message):
 
 async def send_current_exchange_rate(message: types.Message):
     # NOTE Добавить настройку пользователя какие валюты выводить (нужна БД для сохранения настроек пользователей)
-    # NOTE Добавить эмодзи
-    data = await api_client.get_current_exchange_rate()
-    # NOTE добавить pydantic
-    usd = data['Valute']['USD']['Value']
-    eur = data['Valute']['EUR']['Value']
-    await message.reply('Current exchange rates:\n\n' f'USD: {usd}\n' f'EUR: {eur}')
+    data = await ExchangeRateClient.get_current_exchange_rate()
+    await message.reply('Current exchange rates:\n\n' + data)
 
 
 def register_commands(dp: Dispatcher):
