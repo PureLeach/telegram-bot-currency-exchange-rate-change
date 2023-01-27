@@ -1,6 +1,7 @@
 from aiogram import Dispatcher, types
 
 from controllers.user import UserController
+from controllers.сurrency import CurrencyController
 from services.api_client import ExchangeRateClient
 
 
@@ -33,11 +34,24 @@ async def get_help(message: types.Message):
 
 async def send_current_exchange_rate(message: types.Message):
     # NOTE Добавить настройку пользователя какие валюты выводить (нужна БД для сохранения настроек пользователей)
-    data = await ExchangeRateClient.get_current_exchange_rate()
+    data = await ExchangeRateClient.get_current_exchange_rate(message.from_user.id)
     await message.reply('Current exchange rates:\n\n' + data)
+
+
+async def get_list_currencies(message: types.Message):
+    await message.reply('Список доступных валют:\n\n' '/USD - Доллар США\n' '/EUR - Евро\n' '/EGP - Египетских фунтов')
+
+
+async def subscribe_currency(message: types.Message):
+    """Подписка пользователя на валюты"""
+    currency_char_code = message.get_command()[1:]
+    await CurrencyController.add_currency_to_user(message.from_user.id, currency_char_code.lower())
+    await message.reply(f'Вы подписались на валюту {currency_char_code}')
 
 
 def register_commands(dp: Dispatcher):
     dp.register_message_handler(send_welcome, commands='start')
     dp.register_message_handler(get_help, commands='help')
     dp.register_message_handler(send_current_exchange_rate, commands='current')
+    dp.register_message_handler(get_list_currencies, commands='subscribe')
+    dp.register_message_handler(subscribe_currency, commands=['USD', 'EUR', 'EGP'])
