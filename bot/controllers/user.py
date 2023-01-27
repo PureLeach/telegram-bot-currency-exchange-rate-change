@@ -1,7 +1,7 @@
 import typing as t
 
 from db.base import async_session
-from models.user import User
+from models import User
 
 
 class UserController:
@@ -20,3 +20,10 @@ class UserController:
             )
             await session.commit()
             return user
+
+    @staticmethod
+    async def get_users_currencies(id: int) -> list[str]:
+        async with async_session() as session:
+            user: User = await session.get(User, id)
+            currencies = [currency.char_code for currency in user.currencies]
+            return currencies
