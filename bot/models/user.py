@@ -1,4 +1,5 @@
 from sqlalchemy import BigInteger, Column, String
+from sqlalchemy.orm import relationship
 
 from db.base import Base
 
@@ -10,3 +11,4 @@ class User(Base):
     first_name = Column(String)
     last_name = Column(String)
     username = Column(String)
+    currencies = relationship('Currency', secondary='currency_users', back_populates='users', lazy='joined')
