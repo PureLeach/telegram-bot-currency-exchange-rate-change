@@ -8,5 +8,5 @@ class Currency(Base):
     __tablename__ = 'currencies'
 
     id = Column(Integer, primary_key=True)
-    char_code = Column(String)
+    char_code = Column(String, unique=True)
     users = relationship('User', secondary='currency_users', back_populates='currencies', lazy='joined')
