@@ -3,7 +3,9 @@ import json
 from aiohttp_client_cache import CachedSession
 
 from controllers.user import UserController
+from models.exceptions import CurrencyException
 from schemas.exchange_rate import SchemaBodyCurrentExchangeRate
+from services.exceptions import CBRException
 from settings import CBR_URL, cache, logger
 
 
@@ -27,8 +29,7 @@ class ExchangeRateClient:
     async def get_current_exchange_rate(id: int) -> str:
         currencies = await UserController.get_users_currencies(id)
         if not currencies:
-            # NOTE У вас нет подписок на валюты
-            raise Exception('')
+            raise CurrencyException('User does not have subscriptions to currencies')
         async with CachedSession(cache=cache) as session:
             async with session.get(CBR_URL, timeout=10) as response:
                 if response.status == 200:
@@ -38,5 +39,6 @@ class ExchangeRateClient:
                     logger.error(
                         f'Ошибка при обращении к сервису {CBR_URL}: status_code={response.status}, data={response.text}'
                     )
-                    # NOTE Добавиать свои исключения
-                    raise Exception('')
+                    raise CBRException(
+                        f'Error when requesting data: status_code={response.status}, data={response.text}'
+                    )
