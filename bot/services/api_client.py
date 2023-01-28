@@ -1,10 +1,10 @@
 import json
 
-import aiohttp
+from aiohttp_client_cache import CachedSession
 
 from controllers.user import UserController
 from schemas.exchange_rate import SchemaBodyCurrentExchangeRate
-from settings import CBR_URL, logger
+from settings import CBR_URL, cache, logger
 
 
 class ExchangeRateClient:
@@ -17,7 +17,6 @@ class ExchangeRateClient:
         # NOTE Добавить эмодзи
         data = json.loads(raw_data)
         load_schema = SchemaBodyCurrentExchangeRate(**data)
-        # NOTE Добавить таблицу курсов валют пользователя
         users_exchange_rates = ''
         for currency in currencies:
             valute = getattr(load_schema.valute, currency)
@@ -28,17 +27,16 @@ class ExchangeRateClient:
     async def get_current_exchange_rate(id: int) -> str:
         currencies = await UserController.get_users_currencies(id)
         if not currencies:
-            # У вас нет подписок на валюты
+            # NOTE У вас нет подписок на валюты
             raise Exception('')
-        async with aiohttp.ClientSession() as session:
-            # NOTE: Добавить кэширование
-            async with session.get(CBR_URL) as resp:
-                if resp.status == 200:
-                    raw_data = await resp.read()
+        async with CachedSession(cache=cache) as session:
+            async with session.get(CBR_URL, timeout=10) as response:
+                if response.status == 200:
+                    raw_data = await response.read()
                     return await ExchangeRateClient.collect_users_exchange_rates(raw_data, currencies)
                 else:
                     logger.error(
-                        f'Ошибка при обращении к сервису {CBR_URL}: status_code={resp.status}, data={resp.text}'
+                        f'Ошибка при обращении к сервису {CBR_URL}: status_code={response.status}, data={response.text}'
                     )
                     # NOTE Добавиать свои исключения
                     raise Exception('')

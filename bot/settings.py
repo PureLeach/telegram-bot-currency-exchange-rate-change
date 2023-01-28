@@ -1,3 +1,4 @@
+from aiohttp_client_cache import CacheBackend
 from environs import Env
 from loguru import logger
 
@@ -27,3 +28,6 @@ logger.add(
     diagnose=True,
     encoding='utf-8',
 )
+
+CACHE_EXPIRE_AFTER = env.int('CACHE_EXPIRE_AFTER', default=60 * 60)
+cache = CacheBackend(expire_after=CACHE_EXPIRE_AFTER)
