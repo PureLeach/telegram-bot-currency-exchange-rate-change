@@ -1,6 +1,7 @@
 import json
 
 from aiohttp_client_cache import CachedSession
+from flag import flag
 
 from controllers.user import UserController
 from models.exceptions import CurrencyException
@@ -22,7 +23,7 @@ class ExchangeRateClient:
         users_exchange_rates = ''
         for currency in currencies:
             valute = getattr(load_schema.valute, currency)
-            users_exchange_rates += f'{valute.char_code}: {valute.value}\n'
+            users_exchange_rates += f'{flag(valute.char_code[:2])} {valute.char_code}: {valute.value}\n'
         return users_exchange_rates
 
     @staticmethod
