@@ -10,7 +10,14 @@ from settings import logger
 
 class CurrencyController:
     @staticmethod
-    async def get_currencies(currency_char_codes: list) -> t.List[Currency]:
+    async def get_all_currencies() -> t.List[Currency]:
+        async with async_session() as session:
+            result = await session.execute(select(Currency))
+            currencies: t.List[Currency] = result.unique().scalars().all()
+            return currencies
+
+    @staticmethod
+    async def get_currencies_by_codes(currency_char_codes: list) -> t.List[Currency]:
         async with async_session() as session:
             result = await session.execute(select(Currency).filter(Currency.char_code.in_(currency_char_codes)))
             currencies: Currency = result.unique().scalars().all()
@@ -18,7 +25,7 @@ class CurrencyController:
 
     @staticmethod
     async def add_currency_to_user(user_id: int, currency_char_codes: list) -> None:
-        currencies = await CurrencyController.get_currencies(currency_char_codes)
+        currencies = await CurrencyController.get_currencies_by_codes(currency_char_codes)
         try:
             async with async_session() as session:
                 user: User = await session.get(User, user_id)

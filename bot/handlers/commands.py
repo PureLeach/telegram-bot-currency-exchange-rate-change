@@ -4,7 +4,7 @@ from aiogram.dispatcher import FSMContext
 from controllers.user import UserController
 from controllers.сurrency import CurrencyController
 from models.exceptions import CurrencyException
-from services.api_client import ExchangeRateClient
+from services import exchange_rate
 from services.exceptions import CBRException
 
 
@@ -39,7 +39,7 @@ async def get_help(message: types.Message):
 
 async def send_current_exchange_rate(message: types.Message):
     try:
-        data = await ExchangeRateClient.get_current_exchange_rate(message.from_user.id)
+        data = await exchange_rate.get_current_exchange_rate(message.from_user.id)
         await message.reply('Current exchange rates:\n\n' + data)
     except CurrencyException:
         await message.reply("""You don't have currency subscriptions. To subscribe, use the command /subscribe""")
@@ -48,24 +48,14 @@ async def send_current_exchange_rate(message: types.Message):
 
 
 async def get_list_sub_or_unsub_currencies(message: types.Message, state: FSMContext):
-    # NOTE Выводить только те валюты на которые пользователь ещё не подписан
     action = message.get_command()[1:]
+    data = await exchange_rate.get_user_currency_data(message.from_user.id, action)
     if action == 'subscribe':
+        await message.reply('List of currencies available for subscribing:\n\n' + data)
         await state.set_data(data={'action': 'subscribe'})
-        await message.reply(
-            'List of currencies available for subscribing:\n\n'
-            '/USD - Dollar США\n'
-            '/EUR - Euro\n'
-            '/EGP - Egyptian pounds'
-        )
     else:
+        await message.reply('List of currencies available for unsubscribing:\n\n' + data)
         await state.set_data(data={'action': 'unsubscribe'})
-        await message.reply(
-            'List of currencies available for subscribing:\n\n'
-            '/USD - Dollar США\n'
-            '/EUR - Euro\n'
-            '/EGP - Egyptian pounds'
-        )
 
 
 async def sub_or_unsub_to_currency(message: types.Message, state: FSMContext):
@@ -79,9 +69,9 @@ async def sub_or_unsub_to_currency(message: types.Message, state: FSMContext):
         await message.reply(f'You have unsubscribed from the currency {currency_char_code}')
 
 
-def register_commands(dp: Dispatcher):
+def register_commands(dp: Dispatcher, data: dict):
     dp.register_message_handler(send_welcome, commands='start')
     dp.register_message_handler(get_help, commands='help')
     dp.register_message_handler(send_current_exchange_rate, commands='current')
     dp.register_message_handler(get_list_sub_or_unsub_currencies, commands=['subscribe', 'unsubscribe'])
-    dp.register_message_handler(sub_or_unsub_to_currency, commands=['USD', 'EUR', 'EGP'])
+    dp.register_message_handler(sub_or_unsub_to_currency, commands=data['all_currencies'])

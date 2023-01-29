@@ -4,6 +4,7 @@ from aiogram import Bot, Dispatcher
 
 from db.base import async_session, init_models
 from handlers.commands import register_commands
+from services.exchange_rate import get_list_currencies
 from settings import API_TOKEN, logger, storage
 
 
@@ -12,7 +13,8 @@ async def main():
     bot = Bot(token=API_TOKEN)
     bot['db'] = async_session
     dp = Dispatcher(bot, storage=storage)
-    register_commands(dp)
+    all_currencies = await get_list_currencies()
+    register_commands(dp, data={'all_currencies': all_currencies})
     # register_callbacks(dp)
     # await set_bot_commands(bot)
 
