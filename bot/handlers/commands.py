@@ -9,6 +9,7 @@ from services.exceptions import CBRException
 
 
 async def send_welcome(message: types.Message):
+    """Greeting the user and adding him to the database"""
     _, created = await UserController.get_or_create(
         id=message.from_user.id,
         first_name=message.from_user.first_name,
@@ -38,6 +39,7 @@ async def get_help(message: types.Message):
 
 
 async def send_current_exchange_rate(message: types.Message):
+    """Sending the user the current exchange rate of the currencies he subscribed to"""
     try:
         data = await exchange_rate.get_current_exchange_rate(message.from_user.id)
         await message.reply('Current exchange rates:\n\n' + data)
@@ -48,6 +50,7 @@ async def send_current_exchange_rate(message: types.Message):
 
 
 async def get_list_sub_or_unsub_currencies(message: types.Message, state: FSMContext):
+    """Output for the user a list of currencies for which he can subscribe/unsubscribe"""
     action = message.get_command()[1:]
     data = await exchange_rate.get_user_currency_data(message.from_user.id, action)
     if action == 'subscribe':
@@ -59,6 +62,7 @@ async def get_list_sub_or_unsub_currencies(message: types.Message, state: FSMCon
 
 
 async def sub_or_unsub_to_currency(message: types.Message, state: FSMContext):
+    """Subscription/unsubscription of the user from the selected currency"""
     currency_char_code = message.get_command()[1:]
     action = (await state.get_data()).get('action', 'subscribe')
     if action == 'subscribe':
