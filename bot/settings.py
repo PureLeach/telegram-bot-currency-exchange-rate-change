@@ -1,3 +1,4 @@
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiohttp_client_cache import CacheBackend
 from environs import Env
 from loguru import logger
@@ -31,3 +32,5 @@ logger.add(
 
 CACHE_EXPIRE_AFTER = env.int('CACHE_EXPIRE_AFTER', default=60 * 60)
 cache = CacheBackend(expire_after=CACHE_EXPIRE_AFTER)
+
+storage = MemoryStorage()
