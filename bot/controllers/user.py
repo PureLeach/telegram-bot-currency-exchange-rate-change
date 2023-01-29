@@ -2,8 +2,8 @@ import typing as t
 
 from sqlalchemy import select
 
-from db.base import async_session
 from models import User
+from settings.db import async_session
 
 
 class UserController:

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer
 
-from db.base import Base
+from settings.db import Base
 
 
 class CurrencyUser(Base):

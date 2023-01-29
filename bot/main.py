@@ -2,10 +2,12 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 
-from db.base import async_session, init_models
+from handlers import jobs
 from handlers.commands import register_commands
 from services.exchange_rate import get_list_currencies
-from settings import API_TOKEN, logger, storage
+from settings.core import API_TOKEN, logger, storage
+from settings.db import async_session, init_models
+from settings.scheduler import scheduler
 
 
 async def main():
@@ -15,6 +17,8 @@ async def main():
     dp = Dispatcher(bot, storage=storage)
     all_currencies = await get_list_currencies()
     register_commands(dp, data={'all_currencies': all_currencies})
+    scheduler.add_job(jobs.send_message_cron, trigger='interval', seconds=10, kwargs={'bot': bot})
+    scheduler.start()
     # register_callbacks(dp)
     # await set_bot_commands(bot)
 

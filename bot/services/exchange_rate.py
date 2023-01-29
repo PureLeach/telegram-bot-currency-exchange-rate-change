@@ -9,7 +9,7 @@ from controllers.сurrency import CurrencyController
 from models.exceptions import CurrencyException
 from schemas.exchange_rate import SchemaBodyCurrentExchangeRate
 from services.exceptions import CBRException
-from settings import CBR_URL, cache, logger
+from settings.core import CBR_URL, cache, logger
 
 
 async def get_user_currency_data(user_id: int, action: str) -> str:

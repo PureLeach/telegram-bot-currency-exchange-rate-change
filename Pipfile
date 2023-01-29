@@ -14,6 +14,7 @@ pydantic = "==1.10.4"
 alembic = "==1.9.2"
 aiohttp-client-cache = "==0.8.1"
 emoji-country-flag = "==1.3.1"
+apscheduler = "==3.9.1.post1"
 
 [dev-packages]
 autoflake = "==2.0.0"
@@ -28,6 +29,7 @@ flake8-docstrings = "==1.6.0"
 flake8-simplify = "==0.19.3"
 mypy = "==0.961"
 types-python-dateutil = "==2.8.19.2"
+types-pytz = "==2022.7.1.0"
 pre-commit = "==2.21.0"
 
 [requires]

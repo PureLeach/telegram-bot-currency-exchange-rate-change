@@ -3,9 +3,9 @@ import typing as t
 from sqlalchemy import select
 from sqlalchemy.exc import InvalidRequestError
 
-from db.base import async_session
 from models import Currency, User
-from settings import logger
+from settings.core import logger
+from settings.db import async_session
 
 
 class CurrencyController:
