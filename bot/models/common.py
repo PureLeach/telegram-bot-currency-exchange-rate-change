@@ -8,4 +8,4 @@ class CurrencyUser(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    project_id = Column(Integer, ForeignKey('currencies.id'))
+    currency_id = Column(Integer, ForeignKey('currencies.id'))

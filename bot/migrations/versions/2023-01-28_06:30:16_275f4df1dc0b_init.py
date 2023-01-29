@@ -85,9 +85,9 @@ def upgrade() -> None:
         'currency_users',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('user_id', sa.Integer(), nullable=True),
-        sa.Column('project_id', sa.Integer(), nullable=True),
+        sa.Column('currency_id', sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
-            ['project_id'],
+            ['currency_id'],
             ['currencies.id'],
         ),
         sa.ForeignKeyConstraint(
