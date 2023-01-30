@@ -33,7 +33,7 @@ class CurrencyController:
                 await session.commit()
         except InvalidRequestError as e:
             logger.warning(
-                f'Ошибка при добавлении валюты к пользователю: user_id={user_id}, сurrency={currency_char_codes}, error={e}'
+                f'Error when adding currency to a user: user_id={user_id}, currency={currency_char_codes}, error={e}'
             )
 
     @staticmethod
@@ -42,10 +42,10 @@ class CurrencyController:
             async with async_session() as session:
                 user: User = await session.get(User, user_id)
                 user.currencies = [
-                    сurrency for сurrency in user.currencies if сurrency.char_code not in currency_char_codes
+                    currency for currency in user.currencies if currency.char_code not in currency_char_codes
                 ]
                 await session.commit()
         except InvalidRequestError as e:
             logger.warning(
-                f'Ошибка при добавлении валюты к пользователю: user_id={user_id}, сurrency={currency_char_codes}, error={e}'
+                f'Error when adding currency to a user: user_id={user_id}, currency={currency_char_codes}, error={e}'
             )
