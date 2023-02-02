@@ -23,7 +23,7 @@ def upgrade() -> None:
         sa.Column('user_id', sa.BigInteger(), nullable=False),
         sa.Column('currency_char_code', sa.String(), nullable=False),
         sa.Column('value', sa.Numeric(precision=9, scale=4), nullable=False),
-        sa.Column('comparison', sa.String(), nullable=False),
+        sa.Column('comparison_sign', sa.String(), nullable=False),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'),
     )

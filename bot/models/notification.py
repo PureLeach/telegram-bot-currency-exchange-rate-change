@@ -12,4 +12,4 @@ class Notification(Base):
     user = relationship('User', backref='notifications', lazy='joined')
     currency_char_code = Column(String, nullable=False)
     value = Column(Numeric(precision=9, scale=4), nullable=False)
-    comparison = Column(String, nullable=False)
+    comparison_sign = Column(String, nullable=False)

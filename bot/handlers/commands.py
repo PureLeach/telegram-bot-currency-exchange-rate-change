@@ -2,7 +2,6 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 
 from controllers import CurrencyController, UserController
-from handlers.notifications import list_notification, remove_all_notification, remove_notification
 from models.exceptions import CurrencyException
 from services import exchange_rate
 from services.exceptions import CBRException
@@ -81,4 +80,3 @@ def register_commands(dp: Dispatcher, data: dict):
     dp.register_message_handler(send_current_exchange_rate, commands='current')
     dp.register_message_handler(get_list_sub_or_unsub_currencies, commands=['subscribe', 'unsubscribe'])
     dp.register_message_handler(sub_or_unsub_to_currency, commands=data['all_currencies'])
-
