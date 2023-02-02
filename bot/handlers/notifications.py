@@ -3,6 +3,7 @@ from decimal import Decimal, InvalidOperation
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
+from flag import flag
 
 from controllers.notification import NotificationController
 from services.exchange_rate import get_current_exchange_rate
@@ -50,42 +51,49 @@ async def value_chosen(message: types.Message, state: FSMContext):
     # NOTE Добавить клавиатуру с числами (точка запятая)
     try:
         user_value = Decimal(message.text).quantize(Decimal('1.0000'))
-        if user_value <= 0:
-            await message.answer('Please enter the correct value of the number')
-            return
-        user_data = await state.get_data()
-        current_exchange_rate = await get_current_exchange_rate()
-        currency_char = user_data.get('chosen_currency_char')
-        current_value = getattr(current_exchange_rate.valute, currency_char).value
-        if current_value == user_value:
-            await message.answer('The value you specified has already been reached at the moment')
-            await state.finish()
-        else:
-            comparison_sign = '<' if current_value > user_value else '>'
-            await NotificationController.create(
-                user_id=message.from_user.id,
-                currency_char_code=currency_char,
-                value=user_value,
-                comparison_sign=comparison_sign,
-            )
-            await message.answer(
-                f"""A notification for the value of {user_value} {user_data.get('chosen_currency_flag')} currency has been added.\n\n"""
-                'You will receive a notification when the specified currency reaches this value'
-            )
-            await state.finish()
     except (ValueError, InvalidOperation):
         await message.answer('Please enter the correct value of the number')
         return
+    if user_value <= 0:
+        await message.answer('Please enter the correct value of the number')
+        return
+    user_data = await state.get_data()
+    current_exchange_rate = await get_current_exchange_rate()
+    currency_char = user_data.get('chosen_currency_char')
+    current_value = getattr(current_exchange_rate.valute, currency_char).value
+    # NOTE Не работает сравнение decimal.Decimal и float
+    if current_value == user_value:
+        await message.answer('The value you specified has already been reached at the moment')
+        await state.finish()
+        return
+    comparison_sign = '<' if current_value > user_value else '>'
+    await NotificationController.create(
+        user_id=message.from_user.id,
+        currency_char_code=currency_char,
+        value=user_value,
+        comparison_sign=comparison_sign,
+    )
+    await message.answer(
+        f"""A notification for the value of {user_value} {user_data.get('chosen_currency_flag')} currency has been added.\n\n"""
+        'You will receive a notification when the specified currency reaches this value'
+    )
+    await state.finish()
 
 
 async def list_notification(message: types.Message):
     """Output of all notifications"""
-    notifications_gt, notifications_lt = await NotificationController.get_all_notification()
-    await message.reply(
-        'List your notifications:\n\n'
-        '1. USD 32.12 - current value: 312.21\n'
-        '2. EUR 312.12 - current value: 353.21\n'
-    )
+    notifications = await NotificationController.get_all_user_notifications(message.from_user.id)
+    if not notifications:
+        await message.reply("""You have not yet had any notifications created""")
+        return
+    current_exchange_rate = await get_current_exchange_rate()
+    data = ''
+    for index, notification in enumerate(notifications, start=1):
+        user_value = notification.value
+        currency_char = notification.currency_char_code
+        current_value = getattr(current_exchange_rate.valute, currency_char).value
+        data += f'{index}. {flag(currency_char[:2])} {user_value} - current value: {current_value}\n'
+    await message.reply('List your notifications:\n\n' + data)
 
 
 async def remove_notification(message: types.Message):

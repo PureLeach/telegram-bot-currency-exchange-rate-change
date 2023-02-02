@@ -12,7 +12,7 @@ async def check_current_exchange_rate(bot: Bot):
     bot sends a push notification.
     """
     data = await get_current_exchange_rate()
-    notifications_gt, notifications_lt = await NotificationController.get_all_notification()
+    notifications_gt, notifications_lt = await NotificationController.get_all_notifications()
 
     for notification in notifications_gt:
         current_value = getattr(data.valute, notification.currency_char_code).value
