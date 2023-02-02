@@ -1,13 +1,22 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
+from aiogram.types import BotCommand
 
-from handlers import jobs
 from handlers.commands import register_commands
-from services.exchange_rate import get_list_currencies
+from handlers.notifications import register_handlers_notification
+from services.utils import get_list_currencies
 from settings.core import API_TOKEN, logger, storage
 from settings.db import async_session, init_models
-from settings.scheduler import scheduler
+
+
+# Регистрация команд, отображаемых в интерфейсе Telegram
+async def set_commands(bot: Bot):
+    commands = [
+        BotCommand(command='/start', description='Заказать напитки'),
+        BotCommand(command='/cancel', description='Отменить текущее действие'),
+    ]
+    await bot.set_my_commands(commands)
 
 
 async def main():
@@ -17,8 +26,12 @@ async def main():
     dp = Dispatcher(bot, storage=storage)
     all_currencies = await get_list_currencies()
     register_commands(dp, data={'all_currencies': all_currencies})
-    scheduler.add_job(jobs.send_message_cron, trigger='interval', seconds=10, kwargs={'bot': bot})
-    scheduler.start()
+    register_handlers_notification(dp)
+    # Установка команд бота
+    await set_commands(bot)
+
+    # scheduler.add_job(jobs.check_current_exchange_rate, trigger='interval', seconds=10, kwargs={'bot': bot})
+    # scheduler.start()
     # register_callbacks(dp)
     # await set_bot_commands(bot)
 
