@@ -1,8 +1,8 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 
-from controllers.user import UserController
-from controllers.сurrency import CurrencyController
+from controllers import CurrencyController, UserController
+from handlers.notifications import list_notification, remove_all_notification, remove_notification
 from models.exceptions import CurrencyException
 from services import exchange_rate
 from services.exceptions import CBRException
@@ -41,7 +41,7 @@ async def get_help(message: types.Message):
 async def send_current_exchange_rate(message: types.Message):
     """Sending the user the current exchange rate of the currencies he subscribed to"""
     try:
-        data = await exchange_rate.get_current_exchange_rate(message.from_user.id)
+        data = await exchange_rate.get_current_exchange_rate_for_user(message.from_user.id)
         await message.reply('Current exchange rates:\n\n' + data)
     except CurrencyException:
         await message.reply("""You don't have currency subscriptions. To subscribe, use the command /subscribe""")
@@ -74,8 +74,11 @@ async def sub_or_unsub_to_currency(message: types.Message, state: FSMContext):
 
 
 def register_commands(dp: Dispatcher, data: dict):
+    # NOTE Добавить меню
+    # NOTE Добавить логирование в мидлваре
     dp.register_message_handler(send_welcome, commands='start')
     dp.register_message_handler(get_help, commands='help')
     dp.register_message_handler(send_current_exchange_rate, commands='current')
     dp.register_message_handler(get_list_sub_or_unsub_currencies, commands=['subscribe', 'unsubscribe'])
     dp.register_message_handler(sub_or_unsub_to_currency, commands=data['all_currencies'])
+

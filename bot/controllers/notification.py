@@ -24,8 +24,8 @@ class NotificationController:
     @staticmethod
     async def get_all_notification() -> t.Tuple[t.List[Notification], t.List[Notification]]:
         async with async_session() as session:
-            result = await session.execute(select(Notification).filter(Notification.comparison == '>'))
+            result = await session.execute(select(Notification).filter(Notification.comparison_sign == '>'))
             notifications_gt: t.List[Notification] = result.unique().scalars().all()
-            result = await session.execute(select(Notification).filter(Notification.comparison == '<'))
+            result = await session.execute(select(Notification).filter(Notification.comparison_sign == '<'))
             notifications_lt: t.List[Notification] = result.unique().scalars().all()
             return notifications_gt, notifications_lt

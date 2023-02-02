@@ -1,15 +1,14 @@
 import json
-import typing as t
 
-from aiohttp_client_cache import CachedSession
+from aiocache import cached
+from aiohttp import ClientSession
 from flag import flag
 
-from controllers.user import UserController
-from controllers.сurrency import CurrencyController
+from controllers import CurrencyController, UserController
 from models.exceptions import CurrencyException
 from schemas.exchange_rate import SchemaBodyCurrentExchangeRate
 from services.exceptions import CBRException
-from settings.core import CBR_URL, cache, logger
+from settings.core import CACHE_TTL, CBR_URL, logger
 
 
 async def get_user_currency_data(user_id: int, action: str) -> str:
@@ -40,12 +39,13 @@ async def collect_users_exchange_rates(raw_data: bytes, currencies: list) -> str
     return users_exchange_rates
 
 
-async def get_current_exchange_rate(user_id: int) -> str:
+@cached(ttl=CACHE_TTL)
+async def get_current_exchange_rate_for_user(user_id: int) -> str:
     """Request information about the current exchange rate and generate data for the user"""
     currencies = await UserController.get_users_currencies(user_id)
     if not currencies:
         raise CurrencyException('User does not have subscriptions to currencies')
-    async with CachedSession(cache=cache) as session:
+    async with ClientSession() as session:
         async with session.get(CBR_URL, timeout=10) as response:
             if response.status == 200:
                 raw_data = await response.read()
@@ -57,6 +57,16 @@ async def get_current_exchange_rate(user_id: int) -> str:
                 raise CBRException(f'Error when requesting data: status_code={response.status}, data={response.text}')
 
 
-async def get_list_currencies() -> t.List[str]:
-    all_currencies = await CurrencyController.get_all_currencies()
-    return [currency.char_code.upper() for currency in all_currencies]
+async def get_current_exchange_rate() -> SchemaBodyCurrentExchangeRate:
+    """Request information about the current exchange rate without cache"""
+    async with ClientSession() as session:
+        async with session.get(CBR_URL, timeout=10) as response:
+            if response.status == 200:
+                raw_data = await response.read()
+                data = json.loads(raw_data)
+                return SchemaBodyCurrentExchangeRate(**data)
+            else:
+                logger.error(
+                    f'Ошибка при обращении к сервису {CBR_URL}: status_code={response.status}, data={response.text}'
+                )
+                raise CBRException(f'Error when requesting data: status_code={response.status}, data={response.text}')
