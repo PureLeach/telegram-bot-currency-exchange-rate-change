@@ -1,5 +1,6 @@
-from aiogram import Dispatcher, types
+from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher import FSMContext
+from aiogram.types import BotCommand
 
 from controllers import CurrencyController, UserController
 from models.exceptions import CurrencyException
@@ -31,8 +32,8 @@ async def get_help(message: types.Message):
         '/unsubscribe - unsubscribe from the exchange rate\n'
         '/list_notification - display a list of notifications\n'
         '/add_notification - add a notification\n'
-        '/remove_notification - delete notification\n'
-        '/remove_all_notification - delete all notification\n'
+        '/remove_notification - remove notification\n'
+        '/remove_all_notification - remove all notification\n'
         '/cancel - cancel the action\n'
         '/help - reference'
     )
@@ -73,11 +74,26 @@ async def sub_or_unsub_to_currency(message: types.Message, state: FSMContext):
         await message.reply(f'You have unsubscribed from the currency {currency_char_code}')
 
 
-def register_commands(dp: Dispatcher, data: dict):
-    # NOTE Добавить меню
+def register_common_handlers(dp: Dispatcher, data: dict):
     # NOTE Добавить логирование в мидлваре
     dp.register_message_handler(send_welcome, commands='start')
     dp.register_message_handler(get_help, commands='help')
     dp.register_message_handler(send_current_exchange_rate, commands='current')
     dp.register_message_handler(get_list_sub_or_unsub_currencies, commands=['subscribe', 'unsubscribe'])
     dp.register_message_handler(sub_or_unsub_to_currency, commands=data['all_currencies'])
+
+
+async def set_commands(bot: Bot):
+    """Registration of commands displayed in the Telegram interface"""
+    commands = [
+        BotCommand(command='/current', description='Show the current exchange rate'),
+        BotCommand(command='/subscribe', description='Subscribe to the exchange rate'),
+        BotCommand(command='/unsubscribe', description='Unsubscribe from the exchange rate'),
+        BotCommand(command='/list_notification', description='Display a list of notifications'),
+        BotCommand(command='/add_notification', description='Add a notification'),
+        BotCommand(command='/remove_notification', description='Remove notification'),
+        BotCommand(command='/remove_all_notification', description='Remove all notification'),
+        BotCommand(command='/help', description='Reference'),
+        BotCommand(command='/cancel', description='Отменить текущее действие'),
+    ]
+    await bot.set_my_commands(commands)
