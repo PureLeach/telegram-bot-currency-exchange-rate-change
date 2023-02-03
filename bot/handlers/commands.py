@@ -33,6 +33,7 @@ async def get_help(message: types.Message):
         '/add_notification - add a notification\n'
         '/remove_notification - delete notification\n'
         '/remove_all_notification - delete all notification\n'
+        '/cancel - cancel the action\n'
         '/help - reference'
     )
 
