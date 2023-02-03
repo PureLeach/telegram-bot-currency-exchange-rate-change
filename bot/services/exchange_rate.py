@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 
 from aiocache import cached
 from aiohttp import ClientSession
@@ -9,6 +10,13 @@ from models.exceptions import CurrencyException
 from schemas.exchange_rate import SchemaBodyCurrentExchangeRate
 from services.exceptions import CBRException
 from settings.core import CACHE_TTL, CBR_URL, logger
+
+
+async def get_current_exchange_value(currency_char: str) -> Decimal:
+    """Get the current currency value by code"""
+    current_exchange_rate = await get_current_exchange_rate()
+    current_value = Decimal(getattr(current_exchange_rate.valute, currency_char).value).quantize(Decimal('1.0000'))
+    return current_value
 
 
 async def get_user_currency_data(user_id: int, action: str) -> str:

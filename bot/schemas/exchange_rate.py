@@ -1,6 +1,7 @@
 from datetime import datetime
+from decimal import Decimal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 
 class SchemaBodyValute(BaseModel):
@@ -64,3 +65,13 @@ class SchemaBodyCurrentExchangeRate(BaseModel):
     previous_url: str = Field(alias='PreviousURL')
     timestamp: datetime = Field(alias='Timestamp')
     valute: SchemaValute = Field(alias='Valute')
+
+
+class CurrencyValue(BaseModel):
+    value: Decimal = Field()
+
+    @validator('value')
+    def quantize(cls, value):
+        if value <= 0:
+            raise ValueError('The value must be > 0')
+        return Decimal(value).quantize(Decimal('1.0000'))
