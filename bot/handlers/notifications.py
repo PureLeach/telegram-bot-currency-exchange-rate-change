@@ -1,6 +1,5 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 from pydantic import ValidationError
 
 from controllers.notification import NotificationController
@@ -9,12 +8,6 @@ from services.currencies import get_dict_flag_currencies, get_list_flag_currenci
 from services.exchange_rate import get_current_exchange_value
 from services.notifications import get_notifications_data
 from states.notification import AddNotificationState, RemoveAllNotificationState, RemoveNotificationState
-
-
-async def actions_cancel(message: types.Message, state: FSMContext):
-    """Canceling the notification addition process"""
-    await state.finish()
-    await message.answer('You canceled the operation', reply_markup=types.ReplyKeyboardRemove())
 
 
 async def add_notification(message: types.Message, state: FSMContext):
@@ -126,8 +119,6 @@ async def confirmation_chosen(message: types.Message, state: FSMContext):
 
 
 def register_notification_handlers(dp: Dispatcher):
-    dp.register_message_handler(actions_cancel, commands='cancel', state='*')
-    dp.register_message_handler(actions_cancel, Text(equals='cancel', ignore_case=True), state='*')
     dp.register_message_handler(add_notification, commands='add_notification', state='*')
     dp.register_message_handler(currency_chosen, state=AddNotificationState.waiting_for_currency_selection)
     dp.register_message_handler(value_chosen, state=AddNotificationState.waiting_for_value_input)
