@@ -5,9 +5,9 @@ from pydantic import ValidationError
 
 from controllers.notification import NotificationController
 from schemas.exchange_rate import CurrencyValue
+from services.currencies import get_dict_flag_currencies, get_list_flag_currencies
 from services.exchange_rate import get_current_exchange_value
 from services.notifications import get_notifications_data
-from services.utils import get_dict_flag_currencies, get_list_flag_currencies
 from states.notification import AddNotificationState, RemoveAllNotificationState, RemoveNotificationState
 
 

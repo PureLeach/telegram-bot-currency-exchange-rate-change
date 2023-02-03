@@ -5,7 +5,7 @@ from aiocache import cached
 from aiohttp import ClientSession
 from flag import flag
 
-from controllers import CurrencyController, UserController
+from controllers import UserController
 from models.exceptions import CurrencyException
 from schemas.exchange_rate import SchemaBodyCurrentExchangeRate
 from services.exceptions import CBRException
@@ -17,20 +17,6 @@ async def get_current_exchange_value(currency_char: str) -> Decimal:
     current_exchange_rate = await get_current_exchange_rate()
     current_value = Decimal(getattr(current_exchange_rate.valute, currency_char).value).quantize(Decimal('1.0000'))
     return current_value
-
-
-async def get_user_currency_data(user_id: int, action: str) -> str:
-    """
-    Generate information on which currencies the user can subscribe or unsubscribe
-    """
-    currencies = await UserController.get_users_currencies(user_id)
-    if action == 'subscribe':
-        all_currencies = await CurrencyController.get_all_currencies()
-        currencies = [currency.char_code for currency in all_currencies if currency.char_code not in currencies]
-    data = ''
-    for currency in currencies:
-        data += f'{flag(currency[:2])} - /{currency.upper()}\n'
-    return data
 
 
 async def collect_users_exchange_rates(raw_data: bytes, currencies: list) -> str:
@@ -60,7 +46,7 @@ async def get_current_exchange_rate_for_user(user_id: int) -> str:
                 return await collect_users_exchange_rates(raw_data, currencies)
             else:
                 logger.error(
-                    f'Ошибка при обращении к сервису {CBR_URL}: status_code={response.status}, data={response.text}'
+                    f'Error when accessing the service {CBR_URL}: status_code={response.status}, data={response.text}'
                 )
                 raise CBRException(f'Error when requesting data: status_code={response.status}, data={response.text}')
 
@@ -75,6 +61,6 @@ async def get_current_exchange_rate() -> SchemaBodyCurrentExchangeRate:
                 return SchemaBodyCurrentExchangeRate(**data)
             else:
                 logger.error(
-                    f'Ошибка при обращении к сервису {CBR_URL}: status_code={response.status}, data={response.text}'
+                    f'Error when accessing the service {CBR_URL}: status_code={response.status}, data={response.text}'
                 )
                 raise CBRException(f'Error when requesting data: status_code={response.status}, data={response.text}')

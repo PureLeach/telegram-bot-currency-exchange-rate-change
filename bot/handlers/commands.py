@@ -4,8 +4,9 @@ from aiogram.types import BotCommand
 
 from controllers import CurrencyController, UserController
 from models.exceptions import CurrencyException
-from services import exchange_rate
+from services.currencies import get_user_currency_data
 from services.exceptions import CBRException
+from services.exchange_rate import get_current_exchange_rate_for_user
 
 
 async def send_welcome(message: types.Message):
@@ -42,7 +43,7 @@ async def get_help(message: types.Message):
 async def send_current_exchange_rate(message: types.Message):
     """Sending the user the current exchange rate of the currencies he subscribed to"""
     try:
-        data = await exchange_rate.get_current_exchange_rate_for_user(message.from_user.id)
+        data = await get_current_exchange_rate_for_user(message.from_user.id)
         await message.reply('Current exchange rates:\n\n' + data)
     except CurrencyException:
         await message.reply("""You don't have currency subscriptions. To subscribe, use the command /subscribe""")
@@ -53,7 +54,7 @@ async def send_current_exchange_rate(message: types.Message):
 async def get_list_sub_or_unsub_currencies(message: types.Message, state: FSMContext):
     """Output for the user a list of currencies for which he can subscribe/unsubscribe"""
     action = message.get_command()[1:]
-    data = await exchange_rate.get_user_currency_data(message.from_user.id, action)
+    data = await get_user_currency_data(message.from_user.id, action)
     if action == 'subscribe':
         await message.reply('List of currencies available for subscribing:\n\n' + data)
         await state.set_data(data={'action': 'subscribe'})
