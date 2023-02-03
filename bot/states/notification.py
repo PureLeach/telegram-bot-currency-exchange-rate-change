@@ -8,3 +8,7 @@ class AddNotificationState(StatesGroup):
 
 class RemoveNotificationState(StatesGroup):
     waiting_for_index_input = State()
+
+
+class RemoveAllNotificationState(StatesGroup):
+    waiting_for_response = State()

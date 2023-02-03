@@ -8,7 +8,7 @@ from flag import flag
 from controllers.notification import NotificationController
 from services.exchange_rate import get_current_exchange_rate
 from services.utils import get_dict_flag_currencies, get_list_flag_currencies
-from states.notification import AddNotificationState, RemoveNotificationState
+from states.notification import AddNotificationState, RemoveAllNotificationState, RemoveNotificationState
 
 
 async def actions_cancel(message: types.Message, state: FSMContext):
@@ -125,13 +125,25 @@ async def index_chosen(message: types.Message, state: FSMContext):
     await state.finish()
 
 
-async def remove_all_notification(message: types.Message):
-    await message.answer('List of available commands:\n\n')
-    # Вывести клавиатуру с подтверждением удаления всех уведомлений (да/нет)
+async def remove_all_notification(message: types.Message, state: FSMContext):
+    """Deleting all notifications for the user"""
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add('YES', 'NO')
+    await message.answer('Do you really want to delete all your notifications?', reply_markup=keyboard)
+    await state.set_state(RemoveAllNotificationState.waiting_for_response.state)
 
-    # При нажатии на да - удалить все записи уведомлений пользователя
 
-    # При нажатии на нет - сбросить состояние и ничего не делать
+async def confirmation_chosen(message: types.Message, state: FSMContext):
+    """User's choice of the notification number that he wants to delete"""
+    if message.text.lower() not in ('yes', 'no'):
+        await message.answer('Please make your selection using the keypad')
+        return
+    if message.text.lower() == 'yes':
+        await NotificationController.delete_all_user_notifications(message.from_user.id)
+        await message.answer('The notifications has been deleted', reply_markup=types.ReplyKeyboardRemove())
+    else:
+        await message.answer('Deletion canceled', reply_markup=types.ReplyKeyboardRemove())
+    await state.finish()
 
 
 def register_handlers_notification(dp: Dispatcher):
@@ -143,4 +155,5 @@ def register_handlers_notification(dp: Dispatcher):
     dp.register_message_handler(list_notification, commands='list_notification')
     dp.register_message_handler(remove_notification, commands='remove_notification', state='*')
     dp.register_message_handler(index_chosen, state=RemoveNotificationState.waiting_for_index_input)
-    dp.register_message_handler(remove_all_notification, commands='remove_all_notification')
+    dp.register_message_handler(remove_all_notification, commands='remove_all_notification', state='*')
+    dp.register_message_handler(confirmation_chosen, state=RemoveAllNotificationState.waiting_for_response)

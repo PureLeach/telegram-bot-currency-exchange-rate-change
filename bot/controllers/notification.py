@@ -1,6 +1,6 @@
 import typing as t
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from models import Notification
 from settings.db import async_session
@@ -36,3 +36,9 @@ class NotificationController:
             result = await session.execute(select(Notification).filter(Notification.user_id == user_id))
             notifications: t.List[Notification] = result.unique().scalars().all()
             return notifications
+
+    @staticmethod
+    async def delete_all_user_notifications(user_id: int) -> t.List[Notification]:
+        async with async_session() as session:
+            await session.execute(delete(Notification).filter(Notification.user_id == user_id))
+            await session.commit()
