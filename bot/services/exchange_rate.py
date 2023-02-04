@@ -27,7 +27,7 @@ async def get_data_current_exchange_rate(actual=False):
                 await cache.set('current_exchange_rate', schema, ttl=CACHE_TTL)
                 return schema
     except Exception as e:
-        logger.error(f'Error when receiving data from CBR service: error={e}')
+        logger.error(f'Error when receiving data from CBR service: error={e}, type={type(e)}')
         raise CBRServiceUnavailable
 
 
