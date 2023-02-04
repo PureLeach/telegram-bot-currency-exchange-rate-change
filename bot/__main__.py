@@ -22,13 +22,21 @@ async def main():
     all_currencies = await get_list_currencies()
     register_exchange_rate_handlers(dp, data={'all_currencies': all_currencies})
     register_notification_handlers(dp)
-    scheduler.add_job(check_current_exchange_rate, trigger='interval', minutes=JOB_INTERVAL, kwargs={'bot': bot})
+    scheduler.ctx.add_instance(bot, declared_class=Bot)
+    scheduler.add_job(
+        check_current_exchange_rate,
+        trigger='interval',
+        minutes=JOB_INTERVAL,
+        id='check_current_exchange_rate',
+        replace_existing=True,
+    )
     scheduler.start()
     await set_commands(bot)
 
     try:
         await dp.start_polling()
     finally:
+        scheduler.shutdown()
         await dp.storage.close()
         await dp.storage.wait_closed()
         await bot.session.close()
