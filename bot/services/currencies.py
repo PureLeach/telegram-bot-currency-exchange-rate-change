@@ -31,9 +31,7 @@ async def get_dict_flag_currencies() -> t.Dict[str, str]:
 
 
 async def get_user_currency_data(user_id: int, action: str) -> str:
-    """
-    Generate information on which currencies the user can subscribe or unsubscribe
-    """
+    """Generate information on which currencies the user can subscribe or unsubscribe"""
     currencies = await UserController.get_users_currencies(user_id)
     if action == 'subscribe':
         all_currencies = await CurrencyController.get_all_currencies()

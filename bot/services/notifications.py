@@ -3,12 +3,12 @@ import typing as t
 from flag import flag
 
 from models.notification import Notification
-from services.exchange_rate import get_current_exchange_rate
+from services.exchange_rate import get_data_current_exchange_rate
 
 
 async def get_notifications_data(notifications: t.List[Notification]) -> str:
     """Generating data for displaying a list of user notifications"""
-    current_exchange_rate = await get_current_exchange_rate()
+    current_exchange_rate = await get_data_current_exchange_rate()
     data = ''
     for index, notification in enumerate(notifications, start=1):
         user_value = notification.value

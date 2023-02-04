@@ -3,7 +3,8 @@ from aiogram.utils.exceptions import ChatNotFound
 from flag import flag
 
 from controllers import NotificationController
-from services.exchange_rate import get_current_exchange_rate
+from services.exchange_rate import get_data_current_exchange_rate
+from settings.core import logger
 
 
 async def check_current_exchange_rate(bot: Bot):
@@ -12,8 +13,8 @@ async def check_current_exchange_rate(bot: Bot):
     When the exchange rate reaches the value set by the user,
     bot sends a push notification.
     """
-    # NOTE Логи
-    current_exchange_rate = await get_current_exchange_rate(actual=True)
+    logger.info('Starting the periodic task "check_current_exchange_rate"')
+    current_exchange_rate = await get_data_current_exchange_rate(actual=True)
     notifications_gt, notifications_lt = await NotificationController.get_all_notifications()
     users = []
     for notification in notifications_gt:
@@ -44,12 +45,15 @@ async def check_current_exchange_rate(bot: Bot):
 
     for user_data in users:
         try:
+            user_id = user_data.get('user_id')
             await bot.send_message(
-                user_data.get('user_id'),
+                user_id,
                 f"""The {user_data.get('flag')} exchange rate has reached the threshold you set at {user_data.get('users_value')}\n"""
                 f"""Current value: {user_data.get('current_value')}""",
             )
         except ChatNotFound as e:
-            # NOTE Лог Чат не был найден, уведомление для него будет удалено.
-            print(f'\033[31m e, { e }, {type(e)} \033[0m')
+            logger.warning(
+                f'The user`s chat was not found. The notification for this user will be deleted from the database: user_id={user_id}, error={e}'
+            )
         await NotificationController.delete(user_data['notification'])
+    logger.info('Completion of the periodic task "check_current_exchange_rate"')

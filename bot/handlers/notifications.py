@@ -5,14 +5,13 @@ from pydantic import ValidationError
 from controllers.notification import NotificationController
 from schemas.exchange_rate import CurrencyValue
 from services.currencies import get_dict_flag_currencies, get_list_flag_currencies
-from services.exchange_rate import get_current_exchange_value
+from services.exchange_rate import get_current_exchange_rate_value
 from services.notifications import get_notifications_data
 from states.notification import AddNotificationState, RemoveAllNotificationState, RemoveNotificationState
 
 
 async def add_notification(message: types.Message, state: FSMContext):
     """Starting the process of adding a new notification"""
-    # NOTE Добавить логи
     flag_currencies_list = await get_list_flag_currencies()
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*flag_currencies_list)
@@ -43,7 +42,7 @@ async def value_chosen(message: types.Message, state: FSMContext):
         return
     user_data = await state.get_data()
     currency_char = user_data.get('chosen_currency_char')
-    current_value = await get_current_exchange_value(currency_char)
+    current_value = await get_current_exchange_rate_value(currency_char)
     if current_value == user_value:
         await message.answer('The value you specified has already been reached at the moment')
         await state.finish()
@@ -66,7 +65,7 @@ async def list_notification(message: types.Message):
     """Output of all notifications"""
     notifications = await NotificationController.get_all_user_notifications(message.from_user.id)
     if not notifications:
-        await message.reply("""You have not yet had any notifications created""")
+        await message.reply('You have not yet had any notifications created')
         return
     data = await get_notifications_data(notifications)
     await message.reply('List your notifications:\n\n' + data)

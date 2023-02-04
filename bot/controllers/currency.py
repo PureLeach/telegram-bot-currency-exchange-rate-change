@@ -17,7 +17,7 @@ class CurrencyController:
                 currencies: t.List[Currency] = result.unique().scalars().all()
                 return currencies
         except SQLAlchemyError as e:
-            logger.warning(f'Error when getting all currencies: error={e}')
+            logger.error(f'Error when getting all currencies: error={e}')
 
     @staticmethod
     async def get_currencies_by_codes(currency_char_codes: list) -> t.List[Currency]:
@@ -27,9 +27,7 @@ class CurrencyController:
                 currencies: Currency = result.unique().scalars().all()
                 return currencies
         except SQLAlchemyError as e:
-            logger.warning(
-                f'Error when getting currency by codes: currency_char_codes={currency_char_codes}, error={e}'
-            )
+            logger.error(f'Error when getting currency by codes: currency_char_codes={currency_char_codes}, error={e}')
 
     @staticmethod
     async def add_currency_to_user(user_id: int, currency_char_codes: list) -> None:
@@ -40,7 +38,7 @@ class CurrencyController:
                 user.currencies.extend(currencies)
                 await session.commit()
         except SQLAlchemyError as e:
-            logger.warning(
+            logger.error(
                 f'Error when adding currency to a user: user_id={user_id}, currency={currency_char_codes}, error={e}'
             )
 
@@ -54,6 +52,6 @@ class CurrencyController:
                 ]
                 await session.commit()
         except SQLAlchemyError as e:
-            logger.warning(
+            logger.error(
                 f'Error when remove currency to a user: user_id={user_id}, currency={currency_char_codes}, error={e}'
             )

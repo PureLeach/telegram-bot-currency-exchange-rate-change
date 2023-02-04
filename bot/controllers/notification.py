@@ -18,7 +18,7 @@ class NotificationController:
                 await session.commit()
                 return notification
         except SQLAlchemyError as e:
-            logger.warning(f'Error when creating notification: error={e}')
+            logger.error(f'Error when creating notification: error={e}')
 
     @staticmethod
     async def delete(notification: Notification) -> Notification:
@@ -27,7 +27,7 @@ class NotificationController:
                 await session.delete(notification)
                 await session.commit()
         except SQLAlchemyError as e:
-            logger.warning(f'Error when deleting notification: error={e}')
+            logger.error(f'Error when deleting notification: error={e}')
 
     @staticmethod
     async def get_all_notifications() -> t.Tuple[t.List[Notification], t.List[Notification]]:
@@ -39,7 +39,7 @@ class NotificationController:
                 notifications_lt: t.List[Notification] = result.unique().scalars().all()
                 return notifications_gt, notifications_lt
         except SQLAlchemyError as e:
-            logger.warning(f'Error when getting all notifications: error={e}')
+            logger.error(f'Error when getting all notifications: error={e}')
 
     @staticmethod
     async def get_all_user_notifications(user_id: int) -> t.List[Notification]:
@@ -49,7 +49,7 @@ class NotificationController:
                 notifications: t.List[Notification] = result.unique().scalars().all()
                 return notifications
         except SQLAlchemyError as e:
-            logger.warning(f'Error when getting all user notifications: user_id={user_id}, error={e}')
+            logger.error(f'Error when getting all user notifications: user_id={user_id}, error={e}')
 
     @staticmethod
     async def delete_all_user_notifications(user_id: int) -> None:
@@ -58,4 +58,4 @@ class NotificationController:
                 await session.execute(delete(Notification).filter(Notification.user_id == user_id))
                 await session.commit()
         except SQLAlchemyError as e:
-            logger.warning(f'Error when deleting all user notifications: user_id={user_id}, error={e}')
+            logger.error(f'Error when deleting all user notifications: user_id={user_id}, error={e}')

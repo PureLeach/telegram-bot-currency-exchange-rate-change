@@ -4,18 +4,18 @@ from aiogram.dispatcher import FSMContext
 from controllers import CurrencyController
 from models.exceptions import CurrencyException
 from services.currencies import get_user_currency_data
-from services.exceptions import CBRException
-from services.exchange_rate import get_current_exchange_rate_for_user
+from services.exceptions import CBRServiceUnavailable
+from services.exchange_rate import get_data_current_exchange_rate_for_user
 
 
 async def send_current_exchange_rate(message: types.Message):
     """Sending the user the current exchange rate of the currencies he subscribed to"""
     try:
-        data = await get_current_exchange_rate_for_user(message.from_user.id)
+        data = await get_data_current_exchange_rate_for_user(message.from_user.id)
         await message.reply('Current exchange rates:\n\n' + data)
     except CurrencyException:
-        await message.reply("""You don't have currency subscriptions. To subscribe, use the command /subscribe""")
-    except CBRException:
+        await message.reply('You don`t have currency subscriptions. To subscribe, use the command /subscribe')
+    except CBRServiceUnavailable:
         await message.reply('The service is temporarily unavailable')
 
 

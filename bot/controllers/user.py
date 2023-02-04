@@ -18,7 +18,7 @@ class UserController:
                 await session.commit()
                 return user
         except SQLAlchemyError as e:
-            logger.warning(f'Error when creating user: error={e}')
+            logger.error(f'Error when creating user: error={e}')
 
     @staticmethod
     async def get(**kwargs) -> User:
@@ -28,7 +28,7 @@ class UserController:
                 user: User = statement.scalar()
                 return user
         except SQLAlchemyError as e:
-            logger.warning(f'Error when getting user: error={e}')
+            logger.error(f'Error when getting user: error={e}')
 
     @staticmethod
     async def get_or_create(defaults=None, **kwargs) -> t.Tuple[User, bool]:
@@ -45,7 +45,7 @@ class UserController:
                     await session.commit()
                     return user, True
         except SQLAlchemyError as e:
-            logger.warning(f'Error when getting or creating user: error={e}')
+            logger.error(f'Error when getting or creating user: error={e}')
 
     @staticmethod
     async def get_users_currencies(user_id: int) -> t.List[str]:
@@ -55,4 +55,4 @@ class UserController:
                 currencies = [currency.char_code for currency in user.currencies]
                 return currencies
         except SQLAlchemyError as e:
-            logger.warning(f'Error when getting users currencies: user_id={user_id}, error={e}')
+            logger.error(f'Error when getting users currencies: user_id={user_id}, error={e}')

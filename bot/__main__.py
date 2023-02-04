@@ -36,4 +36,4 @@ if __name__ == '__main__':
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit) as e:
-        logger.error(f'Bot stopped! {e}')
+        logger.warning(f'Bot stopped! {e}')
