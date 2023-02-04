@@ -6,8 +6,6 @@ from flag import flag
 from controllers import CurrencyController, UserController
 from settings.core import CACHE_TTL
 
-# NOTE DTO
-
 
 @cached(ttl=CACHE_TTL)
 async def get_list_currencies() -> t.List[str]:

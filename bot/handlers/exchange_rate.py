@@ -44,7 +44,6 @@ async def sub_or_unsub_to_currency(message: types.Message, state: FSMContext):
 
 
 def register_exchange_rate_handlers(dp: Dispatcher, data: dict):
-    # NOTE Добавить логирование в мидлваре
     dp.register_message_handler(send_current_exchange_rate, commands='current')
     dp.register_message_handler(get_list_sub_or_unsub_currencies, commands=['subscribe', 'unsubscribe'])
     dp.register_message_handler(sub_or_unsub_to_currency, commands=data['all_currencies'])

@@ -44,7 +44,6 @@ async def actions_cancel(message: types.Message, state: FSMContext):
 
 
 def register_common_handlers(dp: Dispatcher):
-    # NOTE Добавить логирование в мидлваре
     dp.register_message_handler(send_welcome, commands='start')
     dp.register_message_handler(get_help, commands='help')
     dp.register_message_handler(actions_cancel, commands='cancel', state='*')
