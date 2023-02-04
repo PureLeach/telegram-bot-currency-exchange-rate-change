@@ -1,5 +1,6 @@
 from aiocache import Cache
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiocache.serializers import PickleSerializer
+from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from environs import Env
 from loguru import logger
 
@@ -31,5 +32,5 @@ logger.add(
 )
 
 CACHE_TTL = env.int('CACHE_TTL', default=60 * 60)
-cache = Cache(Cache.MEMORY)
-storage = MemoryStorage()
+cache = Cache(Cache.REDIS, endpoint='127.0.0.1', port=6379, db=0, namespace='cache', serializer=PickleSerializer())
+storage = RedisStorage2(host='127.0.0.1', port=6379, db=0, pool_size=10, prefix='aiogram_fsm')
