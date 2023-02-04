@@ -74,6 +74,9 @@ async def list_notification(message: types.Message):
 async def remove_notification(message: types.Message, state: FSMContext):
     """Deleting the user's notifications"""
     notifications = await NotificationController.get_all_user_notifications(message.from_user.id)
+    if not notifications:
+        await message.answer('You don`t have any notifications at the moment')
+        return
     data = await get_notifications_data(notifications)
     index_with_notification = {str(index): notification for index, notification in enumerate(notifications, start=1)}
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
