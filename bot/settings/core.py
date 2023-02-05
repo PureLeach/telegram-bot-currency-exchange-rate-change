@@ -14,8 +14,8 @@ CBR_URL = env.str('CBR_URL')
 DB_NAME = env.str('DB_NAME')
 DB_USER = env.str('DB_USER')
 DB_PASSWORD = env.str('DB_PASSWORD')
-DB_HOST = env.str('DB_HOST')
-DB_PORT = env.int('DB_PORT')
+DB_HOST = env.str('DB_HOST', default='127.0.0.1')
+DB_PORT = env.int('DB_PORT', default=5432)
 DATABASE_URL = f'postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
 

@@ -53,8 +53,8 @@ docker-compose up
 
 * **Host name/address** `postgres`
 * **Port** `5432`
-* **Username** as `POSTGRES_USER`, by default: `postgres_user`
-* **Password** as `POSTGRES_PASSWORD`, by default `1234`
+* **Username** as `DB_USER`, by default: `postgres_user`
+* **Password** as `DB_PASSWORD`, by default: `1234`
 
 ## Migrations
 

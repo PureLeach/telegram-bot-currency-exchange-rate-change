@@ -1,32 +1,41 @@
 version: '3.7'
 
 volumes:
+  bot-volume:
   redis-volume:
-  db-volume:
+  postgres-volume:
   pgadmin-volume:
-
-networks:
-  postgres:
-    driver: bridge
 
 
 services:
+  bot:
+    container_name: ${COMPOSE_PROJECT_NAME}_bot
+    build:
+      context: ./
+    command: bash -c "alembic upgrade head && python3 bot"
+    volumes:
+      - bot-volume:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
 
   redis:
     container_name: ${COMPOSE_PROJECT_NAME}_redis
     image: redis:alpine
     restart: unless-stopped
-    ports:
-        - 6379:6379
     volumes:
       - redis-volume:/var/lib/redis/
+    ports:
+      - 6379:6379
 
   postgres:
     container_name: ${COMPOSE_PROJECT_NAME}_postgres
     image: postgres:alpine
     restart: unless-stopped
     volumes:
-      - db-volume:/var/lib/postgresql/data
+      - postgres-volume:/var/lib/postgresql/data
     env_file:
       - .env
     environment:
@@ -39,11 +48,16 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - 6432:5432
-    networks:
-      - postgres
-    command: ["postgres", "-c", "log_statement=all", "-c", "log_min_duration_statement=1"]
-  
+      - 5432:5432
+    command:
+      [
+        "postgres",
+        "-c",
+        "log_statement=all",
+        "-c",
+        "log_min_duration_statement=1"
+      ]
+
   pgadmin:
     image: dpage/pgadmin4
     restart: unless-stopped
@@ -53,9 +67,5 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: 'True'
     ports:
       - "5050:80"
-    networks:
-      - postgres
     volumes:
-        # Don't forget to set owner:group for this dir as 5050:5050
-        # (sudo chown -R 5050:5050 <this path>)
-        - pgadmin-volume:/var/lib/pgadmin/
+      - pgadmin-volume:/var/lib/pgadmin/

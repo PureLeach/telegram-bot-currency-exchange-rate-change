@@ -9,12 +9,10 @@ from jobs.periodic_tasks import check_current_exchange_rate
 from middlewares.logger_middleware import LoggerMiddleware
 from services.currencies import get_list_currencies
 from settings.core import API_TOKEN, logger, storage
-from settings.db import init_models
 from settings.scheduler import JOB_INTERVAL, scheduler
 
 
 async def main():
-    await init_models()
     bot = Bot(token=API_TOKEN)
     dp = Dispatcher(bot, storage=storage)
     dp.middleware.setup(LoggerMiddleware())
