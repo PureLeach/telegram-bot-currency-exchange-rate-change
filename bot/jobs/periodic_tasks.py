@@ -9,7 +9,7 @@ from settings.core import logger
 
 async def check_current_exchange_rate(bot: Bot):
     """
-    A periodic task that runs once an hour.
+    A periodic task that runs once every half hour (JOB_INTERVAL).
     When the exchange rate reaches the value set by the user,
     bot sends a push notification.
     """
