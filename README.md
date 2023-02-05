@@ -1,4 +1,4 @@
-## Test task "Telegram bot for notifications of changes in exchange rate quotes"
+# Telegram bot for notifications of changes in exchange rate quotes
 
 ## Problem statement:
 
