@@ -4,11 +4,11 @@
 
 It is necessary to develop a bot that has the following functions:
 
-1. Выводить курсы валют на которые подписан пользователь
-2. Возможность подписываться и отписываться от курса валюты
-3. Добавлять уведомление о достижении заданного значения курса валюты
-4. Присылать пользователю пуш-уведомление при достижении заданного значения
-5. Удалять выставленные уведомления
+1. Display the exchange rates for which the user is subscribed
+2. Ability to subscribe and unsubscribe from exchange rates
+3. Add a notification when the set value of the currency exchange rate is reached
+4. Send a push notification to the user when the set value is reached
+5. Delete notifications
 
 ## Команды бота:
 
@@ -43,17 +43,13 @@ docker-compose build
 docker-compose up
 ```
 
-## Access to postgres:
-
-* **Address:** `127.0.0.1:6432`
-* **Username:** postgres_user (as a default)
-* **Password:** 1234 (as a default)
 
 ## Access to PgAdmin:
 
 * **URL:** `http://localhost:5050`
 * **Username:** admin@admin.com (as a default)
 * **Password:** admin (as a default)
+
 
 ## Add a new server in PgAdmin:
 
@@ -62,16 +58,6 @@ docker-compose up
 * **Username** as `POSTGRES_USER`, by default: `postgres_user`
 * **Password** as `POSTGRES_PASSWORD`, by default `1234`
 
-## Logging
-
-There are no easy way to configure pgadmin log verbosity and it can be overwhelming at times. It is possible to disable pgadmin logging on the container level.
-
-Add the following to `pgadmin` service in the `docker-compose.yml`:
-
-```
-logging:
-  driver: "none"
-```
 
 ## Migrations
 
