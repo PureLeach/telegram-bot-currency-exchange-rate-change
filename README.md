@@ -2,7 +2,7 @@
 
 ## Problem statement:
 
-It is necessary to develop a bot that has the following functions:
+**It is necessary to develop a bot that has the following functions:**
 
 1. Display the exchange rates for which the user is subscribed
 2. Ability to subscribe and unsubscribe from exchange rates
@@ -10,7 +10,7 @@ It is necessary to develop a bot that has the following functions:
 4. Send a push notification to the user when the set value is reached
 5. Delete notifications
 
-## Команды бота:
+## Bot commands:
 
 - `/start` — greeting message
 - `/help` — reference
@@ -43,13 +43,11 @@ docker-compose build
 docker-compose up
 ```
 
-
 ## Access to PgAdmin:
 
 * **URL:** `http://localhost:5050`
 * **Username:** admin@admin.com (as a default)
 * **Password:** admin (as a default)
-
 
 ## Add a new server in PgAdmin:
 
@@ -57,7 +55,6 @@ docker-compose up
 * **Port** `5432`
 * **Username** as `POSTGRES_USER`, by default: `postgres_user`
 * **Password** as `POSTGRES_PASSWORD`, by default `1234`
-
 
 ## Migrations
 
