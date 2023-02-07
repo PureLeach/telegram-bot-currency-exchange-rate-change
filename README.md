@@ -43,6 +43,8 @@ docker-compose build
 docker-compose up
 ```
 
+**Or you can just try it `@Quotes_Tracker_Bot`**
+
 ## Access to PgAdmin:
 
 * **URL:** `http://localhost:5050`
