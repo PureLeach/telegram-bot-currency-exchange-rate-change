@@ -10,13 +10,13 @@ env.read_env(override=True)
 API_TOKEN = env.str('API_TOKEN')
 CBR_URL = env.str('CBR_URL')
 
-# Database
-DB_NAME = env.str('DB_NAME')
-DB_USER = env.str('DB_USER')
-DB_PASSWORD = env.str('DB_PASSWORD')
-DB_HOST = env.str('DB_HOST', default='127.0.0.1')
-DB_PORT = env.int('DB_PORT', default=5432)
-DATABASE_URL = f'postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+REDIS_HOST = env.str('REDIS_HOST', default='127.0.0.1')
+REDIS_PORT = env.int('REDIS_PORT', default=6379)
+REDIS_DB_CACHE = env.int('REDIS_DB_CACHE', default=0)
+REDIS_DB_FSM = env.int('REDIS_DB_FSM', default=1)
+REDIS_DB_SCHEDULER = env.int('REDIS_DB_SCHEDULER', default=2)
+
+CACHE_TTL = env.int('CACHE_TTL', default=60 * 60)
 
 
 logger.add(
@@ -32,14 +32,6 @@ logger.add(
 )
 
 
-REDIS_HOST = env.str('REDIS_HOST', default='127.0.0.1')
-REDIS_PORT = env.int('REDIS_PORT', default=6379)
-REDIS_DB_CACHE = env.int('REDIS_DB_CACHE', default=0)
-REDIS_DB_FSM = env.int('REDIS_DB_FSM', default=1)
-REDIS_DB_SCHEDULER = env.int('REDIS_DB_SCHEDULER', default=2)
-
-
-CACHE_TTL = env.int('CACHE_TTL', default=60 * 60)
 cache = Cache(
     Cache.REDIS,
     endpoint=REDIS_HOST,
@@ -48,4 +40,6 @@ cache = Cache(
     namespace='cache',
     serializer=PickleSerializer(),
 )
+
+
 storage = RedisStorage2(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB_FSM, pool_size=10, prefix='aiogram_fsm')

@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
 from models import Base  # noqa
-from settings.core import DATABASE_URL  # noqa
+from settings.db import DATABASE_URL  # noqa
 
 config = context.config
 config.set_main_option('sqlalchemy.url', DATABASE_URL)

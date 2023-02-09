@@ -18,7 +18,7 @@ async def check_current_exchange_rate(bot: Bot):
     notifications_gt, notifications_lt = await NotificationController.get_all_notifications()
     users = []
     for notification in notifications_gt:
-        current_value = getattr(current_exchange_rate.valute, notification.currency_char_code).value
+        current_value = getattr(current_exchange_rate.currency, notification.currency_char_code).value
         if current_value >= notification.value:
             users.append(
                 {
@@ -31,7 +31,7 @@ async def check_current_exchange_rate(bot: Bot):
             )
 
     for notification in notifications_lt:
-        current_value = getattr(current_exchange_rate.valute, notification.currency_char_code).value
+        current_value = getattr(current_exchange_rate.currency, notification.currency_char_code).value
         if current_value <= notification.value:
             users.append(
                 {

@@ -8,17 +8,12 @@ from settings.core import CACHE_TTL
 
 
 @cached(ttl=CACHE_TTL)
-async def get_list_currencies() -> t.List[str]:
-    """Returns a list of all currencies from the database in uppercase"""
+async def get_list_currencies(emoji=False) -> t.List[str]:
+    """Returns a list of all currencies from the database in uppercase or emoji flags"""
     all_currencies = await CurrencyController.get_all_currencies()
+    if emoji:
+        return [flag(currency.char_code[:2]) for currency in all_currencies]
     return [currency.char_code.upper() for currency in all_currencies]
-
-
-@cached(ttl=CACHE_TTL)
-async def get_list_flag_currencies() -> t.List[str]:
-    """Returns a list of all currencies from the database in the form of emoji flags"""
-    all_currencies = await CurrencyController.get_all_currencies()
-    return [flag(currency.char_code[:2]) for currency in all_currencies]
 
 
 @cached(ttl=CACHE_TTL)

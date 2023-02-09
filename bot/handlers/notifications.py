@@ -4,7 +4,7 @@ from pydantic import ValidationError
 
 from controllers.notification import NotificationController
 from schemas.exchange_rate import CurrencyValue
-from services.currencies import get_dict_flag_currencies, get_list_flag_currencies
+from services.currencies import get_dict_flag_currencies, get_list_currencies
 from services.exchange_rate import get_current_exchange_rate_value
 from services.notifications import get_notifications_data
 from states.notification import AddNotificationState, RemoveAllNotificationState, RemoveNotificationState
@@ -12,7 +12,7 @@ from states.notification import AddNotificationState, RemoveAllNotificationState
 
 async def add_notification(message: types.Message, state: FSMContext):
     """Starting the process of adding a new notification"""
-    flag_currencies_list = await get_list_flag_currencies()
+    flag_currencies_list = await get_list_currencies(emoji=True)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*flag_currencies_list)
     await message.answer('Select the currency for which you want to set the notification', reply_markup=keyboard)

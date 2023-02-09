@@ -34,7 +34,7 @@ async def get_data_current_exchange_rate(actual=False):
 async def get_current_exchange_rate_value(currency_char: str) -> Decimal:
     """Get the current currency value by code"""
     current_exchange_rate = await get_data_current_exchange_rate(actual=True)
-    current_value = Decimal(getattr(current_exchange_rate.valute, currency_char).value).quantize(Decimal('1.0000'))
+    current_value = Decimal(getattr(current_exchange_rate.currency, currency_char).value).quantize(Decimal('1.0000'))
     return current_value
 
 
@@ -51,6 +51,6 @@ async def collect_users_exchange_rates(current_exchange_rate: SchemaBodyCurrentE
     """Collect information about those exchange rates to which the user is subscribed"""
     users_exchange_rates = ''
     for currency in currencies:
-        valute = getattr(current_exchange_rate.valute, currency)
-        users_exchange_rates += f'{flag(valute.char_code[:2])} {valute.char_code}: {valute.value}\n'
+        currency = getattr(current_exchange_rate.currency, currency)
+        users_exchange_rates += f'{flag(currency.char_code[:2])} {currency.char_code}: {currency.value}\n'
     return users_exchange_rates
